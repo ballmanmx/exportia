@@ -10,7 +10,6 @@ const C = {
   tx1:"#F0F4FF",tx2:"#8B95B0",tx3:"#454E65",
 };
 
-// Storage — localStorage con fallback a memoria
 const mem = {};
 function lsGet(key){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):null; }catch{ return mem[key]||null; } }
 function lsSet(key,val){ mem[key]=val; try{ localStorage.setItem(key,JSON.stringify(val)); }catch{} }
@@ -28,7 +27,7 @@ const SEED = [
 ];
 
 const MERCADOS = [
-  {id:"mex",nombre:"México",pais:"México",bandera:"🇲🇽",precioHoy:3.64,tendencia:[2.1,2.0,1.9,2.1,2.3,2.5,2.8,2.6,2.7,3.0,3.2,3.5,3.4,3.64],flete:0,ruta:"Campo",competencia:"—",temporada:"⚠ Escasez jun–sep",tipo:"campo"},
+  {id:"mex",nombre:"México",pais:"México",bandera:"🇲🇽",precioHoy:3.64,tendencia:[2.1,2.0,1.9,2.1,2.3,2.5,2.8,2.6,2.7,3.0,3.2,3.5,3.4,3.64],flete:0,ruta:"Campo GDL",competencia:"—",temporada:"⚠ Escasez jun–sep",tipo:"campo"},
   {id:"usa",nombre:"USA",pais:"USA",bandera:"🇺🇸",precioHoy:4.20,tendencia:[3.5,3.4,3.3,3.5,3.7,3.9,4.1,3.9,4.0,4.1,4.2,4.3,4.2,4.20],flete:0.35,ruta:"GDL→LAX",competencia:"Perú, Chile",temporada:"🟢 Todo el año",tipo:"fob"},
   {id:"dxb",nombre:"Dubai",pais:"EAU",bandera:"🇦🇪",precioHoy:5.35,tendencia:[4.2,4.0,3.9,4.1,4.3,4.5,4.8,4.6,4.7,5.0,5.2,5.5,5.3,5.35],flete:1.72,ruta:"GDL→DXB",competencia:"Kenia, Perú",temporada:"⚠ Evaluar jun–sep",tipo:"venta"},
 ];
@@ -60,19 +59,19 @@ function Avatar({name,role}){
   const c=role==="productor"?C.green:C.blue;
   return <div style={{width:36,height:36,borderRadius:"50%",flexShrink:0,background:role==="productor"?C.greenDim:C.blueDim,border:`1.5px solid ${c}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:c}}>{i}</div>;
 }
-function BackBtn({onBack}){return <button onClick={onBack} style={{background:"none",border:"none",color:C.tx2,cursor:"pointer",fontSize:13,padding:0,marginBottom:18}}>← Atrás</button>;}
+function BackBtn({onBack}){return <button onClick={onBack} style={{background:"none",border:"none",color:C.tx2,cursor:"pointer",fontSize:14,padding:"0 0 18px 0",display:"block"}}>← Atrás</button>;}
 
-function Sparkline({data,color=C.green,height=60,blur=false}){
+function Sparkline({data,color=C.green,height=70,blur=false}){
   const min=Math.min(...data),max=Math.max(...data),range=max-min||1,w=200,h=height;
   const pts=data.map((v,i)=>`${(i/(data.length-1))*w},${h-((v-min)/range)*(h-8)-4}`).join(" ");
   const ly=h-((data[data.length-1]-min)/range)*(h-8)-4;
   return(
     <div style={{position:"relative"}}>
       <svg viewBox={`0 0 ${w} ${h}`} style={{width:"100%",height,filter:blur?"blur(4px)":"none"}} preserveAspectRatio="none">
-        <polyline points={pts} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round"/>
-        <circle cx={w} cy={ly} r="3.5" fill={color}/>
+        <polyline points={pts} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round"/>
+        <circle cx={w} cy={ly} r="4" fill={color}/>
       </svg>
-      {blur&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>🔒</div>}
+      {blur&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}}>🔒</div>}
     </div>
   );
 }
@@ -93,7 +92,7 @@ function BarChart({data,height=90,labelKey="mes",valueKey="precio",colorFn}){
 
 function PaywallBanner({onPublish}){
   return(
-    <div style={{margin:"0 0 14px",padding:"12px 16px",background:`linear-gradient(135deg,${C.greenDim},${C.blueDim})`,border:`1px solid ${C.greenBorder}`,borderRadius:12,display:"flex",alignItems:"center",gap:12}}>
+    <div style={{marginBottom:14,padding:"12px 16px",background:`linear-gradient(135deg,${C.greenDim},${C.blueDim})`,border:`1px solid ${C.greenBorder}`,borderRadius:12,display:"flex",alignItems:"center",gap:12}}>
       <div style={{fontSize:24,flexShrink:0}}>🔒</div>
       <div style={{flex:1}}>
         <div style={{fontSize:13,fontWeight:800,color:C.tx1,marginBottom:2}}>Publica tu precio para ver el mercado</div>
@@ -121,14 +120,19 @@ function BottomNav({screen,setScreen}){
   );
 }
 
+// ─── ONBOARDING ──────────────────────────────────────────────────────────────
 function Onboarding({onComplete}){
   const [step,setStep]=useState(0);
   const [role,setRole]=useState(null);
   const [pais,setPais]=useState("México");
   const [region,setRegion]=useState("");
   const [nombre,setNombre]=useState("");
-  const regiones={"México":["Ciudad Guzmán, Jalisco","Zapotlán, Jalisco","Uruapan, Michoacán","Tancítaro, Michoacán","Otra (México)"],"EAU":["Dubai, UAE","Abu Dhabi, UAE","Sharjah, UAE"],"USA":["Los Angeles, CA","Miami, FL","Nueva York, NY"],"Otro":["Otra región"]};
-
+  const regiones={
+    "México":["Ciudad Guzmán, Jalisco","Zapotlán, Jalisco","Uruapan, Michoacán","Tancítaro, Michoacán","Otra (México)"],
+    "EAU":["Dubai, UAE","Abu Dhabi, UAE","Sharjah, UAE"],
+    "USA":["Los Angeles, CA","Miami, FL","Nueva York, NY"],
+    "Otro":["Otra región"],
+  };
   if(step===0) return(
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",justifyContent:"center",padding:24}}>
       <div style={{textAlign:"center",marginBottom:40}}>
@@ -150,7 +154,6 @@ function Onboarding({onComplete}){
       ))}
     </div>
   );
-
   return(
     <div style={{minHeight:"100vh",background:C.bg,padding:24,paddingTop:48}}>
       <BackBtn onBack={()=>setStep(0)}/>
@@ -185,6 +188,160 @@ function Onboarding({onComplete}){
   );
 }
 
+// ─── ANALÍTICAS DE MERCADO ────────────────────────────────────────────────────
+function AnaliticasMercado({mercado,onBack,campoAvg,unlocked,onPublish}){
+  const [tab,setTab]=useState("tendencia");
+  const spread=mercado.precioHoy-campoAvg;
+  const margen=campoAvg>0?((mercado.precioHoy-campoAvg-mercado.flete)/mercado.precioHoy*100):null;
+  const trend=mercado.tendencia;
+  const pctChange=((trend[trend.length-1]-trend[0])/trend[0]*100);
+  const color=mercado.tipo==="campo"?C.green:mercado.tipo==="fob"?C.amber:C.blue;
+
+  return(
+    <div style={{padding:"16px 16px 0"}}>
+      <BackBtn onBack={onBack}/>
+      {!unlocked&&<PaywallBanner onPublish={onPublish}/>}
+
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
+        <div>
+          <div style={{fontSize:11,color:C.tx3,marginBottom:4}}>{mercado.bandera} {mercado.pais} · {mercado.ruta}</div>
+          <Val size={24}>{mercado.nombre}</Val>
+          <div style={{fontSize:12,color:C.tx2,marginTop:4}}>{mercado.competencia!=="—"?`Compite con: ${mercado.competencia}`:""}</div>
+        </div>
+        <div style={{textAlign:"right"}}>
+          {unlocked
+            ?<Val size={28} color={color}>${mercado.precioHoy.toFixed(2)}</Val>
+            :<div style={{fontSize:28,fontWeight:900,color:C.tx3,filter:"blur(6px)"}}>$-.--</div>
+          }
+          <div style={{fontSize:11,color:pctChange>=0?C.green:C.red,fontWeight:700,marginTop:2}}>{pctChange>=0?"↑":"↓"}{Math.abs(pctChange).toFixed(1)}% vs 14 sem.</div>
+        </div>
+      </div>
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
+        {[
+          {label:"Campo avg",val:campoAvg>0?`$${campoAvg.toFixed(2)}`:"—",color:C.green,lock:false},
+          {label:"Flete",val:`$${mercado.flete.toFixed(2)}`,color:C.amber,lock:false},
+          {label:"Margen est.",val:margen!==null?`${margen.toFixed(1)}%`:"—",color:margen&&margen>=20?C.green:margen&&margen>=10?C.amber:C.red,lock:!unlocked},
+        ].map(s=>(
+          <Card key={s.label} style={{padding:10}}>
+            <Lbl>{s.label}</Lbl>
+            {s.lock
+              ?<div style={{fontSize:15,fontWeight:800,color:C.tx3,filter:"blur(4px)"}}>---%</div>
+              :<Val size={15} color={s.color}>{s.val}</Val>
+            }
+          </Card>
+        ))}
+      </div>
+
+      <div style={{marginBottom:14,padding:"10px 14px",background:C.amberDim,border:`1px solid ${C.amberBorder}`,borderRadius:10,fontSize:12,color:C.amber,fontWeight:600}}>
+        {mercado.temporada}
+      </div>
+
+      <div style={{display:"flex",gap:6,marginBottom:14}}>
+        {[{id:"tendencia",label:"Tendencia"},{id:"estacional",label:"Estacional"},{id:"comparativo",label:"vs Campo"}].map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"9px 0",borderRadius:8,fontSize:11,fontWeight:700,cursor:"pointer",background:tab===t.id?C.surfaceHigh:"transparent",border:`1px solid ${tab===t.id?C.borderMid:"transparent"}`,color:tab===t.id?C.tx1:C.tx3}}>{t.label}</button>
+        ))}
+      </div>
+
+      {tab==="tendencia"&&(
+        <Card style={{marginBottom:14}}>
+          <Lbl>Precio · últimas 14 semanas</Lbl>
+          <div style={{marginTop:10}}>
+            <Sparkline data={trend} color={color} height={80} blur={!unlocked}/>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}>
+            <span style={{fontSize:10,color:C.tx3}}>hace 14 sem.</span>
+            <span style={{fontSize:10,color:C.tx3}}>hoy</span>
+          </div>
+          <Hr/>
+          <div style={{display:"flex",justifyContent:"space-between"}}>
+            <div><Lbl>Mínimo</Lbl>{unlocked?<Val size={14} color={C.red}>${Math.min(...trend).toFixed(2)}</Val>:<div style={{fontSize:14,fontWeight:800,filter:"blur(4px)",color:C.tx3}}>$-.--</div>}</div>
+            <div><Lbl>Máximo</Lbl>{unlocked?<Val size={14} color={C.green}>${Math.max(...trend).toFixed(2)}</Val>:<div style={{fontSize:14,fontWeight:800,filter:"blur(4px)",color:C.tx3}}>$-.--</div>}</div>
+            <div><Lbl>Hoy</Lbl>{unlocked?<Val size={14} color={color}>${trend[trend.length-1].toFixed(2)}</Val>:<div style={{fontSize:14,fontWeight:800,filter:"blur(4px)",color:C.tx3}}>$-.--</div>}</div>
+          </div>
+        </Card>
+      )}
+
+      {tab==="estacional"&&(
+        <Card style={{marginBottom:14}}>
+          <Lbl>Patrón precio campo · 12 meses</Lbl>
+          <div style={{marginTop:12}}>
+            <BarChart data={ESTACIONAL} labelKey="mes" valueKey="precio" height={90} colorFn={d=>d.escasez?C.amber:C.border}/>
+          </div>
+          <div style={{marginTop:10,display:"flex",gap:14}}>
+            <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:10,height:10,borderRadius:2,background:C.amber}}/><span style={{fontSize:11,color:C.tx2}}>Escasez activa</span></div>
+            <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:10,height:10,borderRadius:2,background:C.border}}/><span style={{fontSize:11,color:C.tx2}}>Temporada normal</span></div>
+          </div>
+          <Hr/>
+          <div style={{fontSize:12,color:C.tx2}}>Ventana óptima para <strong style={{color:C.tx1}}>{mercado.nombre}</strong>: {mercado.temporada.replace(/[🟢⚠🟡]/g,"").trim()}</div>
+        </Card>
+      )}
+
+      {tab==="comparativo"&&(
+        <Card style={{marginBottom:14}}>
+          <Lbl>Desglose campo → {mercado.nombre}</Lbl>
+          <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:12}}>
+            {[
+              {label:"Precio campo (avg)",val:campoAvg,color:C.green,lock:false},
+              {label:`Flete ${mercado.ruta}`,val:mercado.flete,color:C.amber,lock:false},
+              {label:"Spread / margen",val:Math.max(0,spread-mercado.flete),color:C.blue,lock:!unlocked},
+            ].map(row=>(
+              <div key={row.label}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{fontSize:12,color:C.tx2}}>{row.label}</span>
+                  {row.lock
+                    ?<span style={{fontSize:13,fontWeight:800,color:C.tx3,filter:"blur(4px)"}}>$-.--/kg</span>
+                    :<span style={{fontSize:13,fontWeight:800,color:row.color}}>${row.val.toFixed(2)}/kg</span>
+                  }
+                </div>
+                <div style={{height:6,background:C.border,borderRadius:3}}>
+                  <div style={{height:"100%",width:row.lock?"25%":`${(row.val/mercado.precioHoy)*100}%`,background:row.lock?C.tx3:row.color+"99",borderRadius:3}}/>
+                </div>
+              </div>
+            ))}
+            <Hr/>
+            <div style={{display:"flex",justifyContent:"space-between"}}>
+              <span style={{fontSize:13,color:C.tx2,fontWeight:700}}>Total destino</span>
+              {unlocked
+                ?<span style={{fontSize:14,fontWeight:900,color:color}}>${mercado.precioHoy.toFixed(2)}/kg</span>
+                :<span style={{fontSize:14,fontWeight:900,color:C.tx3,filter:"blur(4px)"}}>$-.--/kg</span>
+              }
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <Card style={{marginBottom:16}}>
+        <Lbl>México · USA · Dubai</Lbl>
+        <div style={{marginTop:10}}>
+          {MERCADOS.map(m=>{
+            const isThis=m.id===mercado.id;
+            const mg=campoAvg>0?((m.precioHoy-campoAvg-m.flete)/m.precioHoy*100):null;
+            return(
+              <div key={m.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:isThis?"8px 10px":"8px 0",borderBottom:`1px solid ${C.border}`,background:isThis?C.blueDim:"transparent",borderRadius:isThis?8:0,margin:isThis?"2px 0":0}}>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:16}}>{m.bandera}</span>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:isThis?800:600,color:isThis?C.blue:C.tx1}}>{m.nombre}</div>
+                    <div style={{fontSize:10,color:C.tx3}}>{m.ruta}</div>
+                  </div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  {unlocked
+                    ?<><div style={{fontSize:14,fontWeight:800,color:isThis?C.blue:C.tx1}}>${m.precioHoy.toFixed(2)}</div>{mg!==null&&<div style={{fontSize:11,color:mg>=20?C.green:mg>=10?C.amber:C.red,fontWeight:700}}>{mg.toFixed(1)}% mg</div>}</>
+                    :<div style={{fontSize:14,fontWeight:800,color:C.tx3,filter:"blur(4px)"}}>$-.--</div>
+                  }
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// ─── REGISTRAR ────────────────────────────────────────────────────────────────
 function Registrar({user,onSubmit}){
   const [precio,setPrecio]=useState("");
   const [volumen,setVolumen]=useState("");
@@ -201,10 +358,10 @@ function Registrar({user,onSubmit}){
   return(
     <div style={{padding:"20px 16px 0"}}>
       <Val size={19}>Publicar precio</Val>
-      <div style={{fontSize:12,color:C.tx2,marginBottom:24,marginTop:4}}>{user.role==="productor"?"🌱":"🏪"} Aguacate Hass · {user.region}</div>
-      <div style={{marginBottom:14,padding:"12px 16px",background:C.greenDim,border:`1px solid ${C.greenBorder}`,borderRadius:12}}>
+      <div style={{fontSize:12,color:C.tx2,marginBottom:20,marginTop:4}}>{user.role==="productor"?"🌱":"🏪"} Aguacate Hass · {user.region}</div>
+      <div style={{marginBottom:16,padding:"12px 16px",background:C.greenDim,border:`1px solid ${C.greenBorder}`,borderRadius:12}}>
         <div style={{fontSize:13,fontWeight:800,color:C.green,marginBottom:2}}>🔓 Un precio = acceso completo</div>
-        <div style={{fontSize:12,color:C.tx2}}>Publica tu precio y desbloquea todos los precios del mercado.</div>
+        <div style={{fontSize:12,color:C.tx2}}>Publica y desbloquea todos los precios del mercado.</div>
       </div>
       <div style={{marginBottom:18}}>
         <Lbl>{user.role==="productor"?"Precio de campo hoy (USD/kg)":"Precio de venta (USD/kg)"}</Lbl>
@@ -233,13 +390,13 @@ function Registrar({user,onSubmit}){
   );
 }
 
+// ─── FEED ─────────────────────────────────────────────────────────────────────
 function Feed({prices,user,unlocked,onUserTap,onMercadoTap,onPublish}){
   const [filter,setFilter]=useState("todos");
   const active=prices.filter(p=>isActive(p.ts));
   const filtered=filter==="todos"?prices:prices.filter(p=>p.role===filter);
   const avgC=avg(active.filter(p=>p.role==="productor").map(p=>p.precio));
   const avgV=avg(active.filter(p=>p.role==="minorista").map(p=>p.precio));
-  const best=MERCADOS.filter(m=>m.id!=="mex").sort((a,b)=>b.precioHoy-a.precioHoy)[0];
 
   return(
     <div style={{padding:"16px 16px 0"}}>
@@ -253,12 +410,7 @@ function Feed({prices,user,unlocked,onUserTap,onMercadoTap,onPublish}){
       </div>
 
       {!unlocked&&<PaywallBanner onPublish={onPublish}/>}
-
-      {unlocked&&(
-        <div style={{marginBottom:14,padding:"10px 14px",background:C.greenDim,border:`1px solid ${C.greenBorder}`,borderRadius:10,fontSize:12,color:C.green,fontWeight:700}}>
-          🔓 Acceso completo · precios visibles
-        </div>
-      )}
+      {unlocked&&<div style={{marginBottom:14,padding:"10px 14px",background:C.greenDim,border:`1px solid ${C.greenBorder}`,borderRadius:10,fontSize:12,color:C.green,fontWeight:700}}>🔓 Acceso completo · precios visibles</div>}
 
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
         {[
@@ -268,25 +420,22 @@ function Feed({prices,user,unlocked,onUserTap,onMercadoTap,onPublish}){
         ].map(s=>(
           <Card key={s.label} style={{padding:"10px 10px"}}>
             <Lbl>{s.label}</Lbl>
-            {unlocked
-              ?<Val size={15} color={s.color}>{s.val}</Val>
-              :<div style={{fontSize:15,fontWeight:800,color:C.tx3,filter:"blur(5px)"}}>$-.--</div>
-            }
+            {unlocked?<Val size={15} color={s.color}>{s.val}</Val>:<div style={{fontSize:15,fontWeight:800,color:C.tx3,filter:"blur(5px)"}}>$-.--</div>}
           </Card>
         ))}
       </div>
 
       <div style={{marginBottom:14}}>
-        <div style={{fontSize:11,color:C.tx3,fontWeight:700,letterSpacing:"0.06em",marginBottom:8}}>MERCADOS</div>
+        <div style={{fontSize:11,color:C.tx3,fontWeight:700,letterSpacing:"0.06em",marginBottom:8}}>MERCADOS · TOCA PARA VER ANALÍTICAS</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
           {MERCADOS.map(m=>{
             const mg=avgC>0?((m.precioHoy-avgC-m.flete)/m.precioHoy*100):null;
             return(
-              <div key={m.id} onClick={()=>onMercadoTap(m)} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 10px",cursor:"pointer",textAlign:"center"}}>
+              <div key={m.id} onClick={()=>onMercadoTap(m)} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 10px",cursor:"pointer",textAlign:"center",userSelect:"none"}}>
                 <div style={{fontSize:22,marginBottom:4}}>{m.bandera}</div>
                 <div style={{fontSize:12,fontWeight:700,color:C.tx1,marginBottom:4}}>{m.nombre}</div>
                 {unlocked
-                  ?<><div style={{fontSize:16,fontWeight:900,color:m.tipo==="campo"?C.green:C.blue}}>${m.precioHoy.toFixed(2)}</div>{mg!==null&&<div style={{fontSize:10,color:mg>=20?C.green:mg>=10?C.amber:C.red,fontWeight:700,marginTop:2}}>{mg.toFixed(1)}% mg</div>}</>
+                  ?<><div style={{fontSize:16,fontWeight:900,color:m.tipo==="campo"?C.green:m.tipo==="fob"?C.amber:C.blue}}>${m.precioHoy.toFixed(2)}</div>{mg!==null&&<div style={{fontSize:10,color:mg>=20?C.green:mg>=10?C.amber:C.red,fontWeight:700,marginTop:2}}>{mg.toFixed(1)}% mg</div>}</>
                   :<div style={{fontSize:16,fontWeight:900,color:C.tx3,filter:"blur(5px)"}}>$-.--</div>
                 }
               </div>
@@ -333,7 +482,8 @@ function Feed({prices,user,unlocked,onUserTap,onMercadoTap,onPublish}){
   );
 }
 
-function Dashboard({user,prices,unlocked,onLogout}){
+// ─── DASHBOARD PERSONAL ───────────────────────────────────────────────────────
+function Dashboard({user,prices,unlocked,onLogout,onResetOnboarding}){
   const myPrices=prices.filter(p=>p.user===user.nombre).sort((a,b)=>b.ts-a.ts);
   const myLast=myPrices[0];
   const diasRestantes=myLast?Math.max(0,7-Math.floor((Date.now()-myLast.ts)/(1000*60*60*24))):null;
@@ -358,7 +508,7 @@ function Dashboard({user,prices,unlocked,onLogout}){
       <div style={{marginBottom:14,padding:"12px 16px",background:unlocked?C.greenDim:C.amberDim,border:`1px solid ${unlocked?C.greenBorder:C.amberBorder}`,borderRadius:12,display:"flex",alignItems:"center",gap:10}}>
         <div style={{fontSize:20}}>{unlocked?"🔓":"🔒"}</div>
         <div>
-          <div style={{fontSize:13,fontWeight:800,color:unlocked?C.green:C.amber}}>{unlocked?"Acceso completo":"Sin acceso al mercado"}</div>
+          <div style={{fontSize:13,fontWeight:800,color:unlocked?C.green:C.amber}}>{unlocked?"Acceso completo al mercado":"Sin acceso al mercado"}</div>
           <div style={{fontSize:11,color:C.tx2}}>{unlocked&&diasRestantes!==null?`Tu precio expira en ${diasRestantes} días`:"Publica tu precio para desbloquear"}</div>
         </div>
       </div>
@@ -373,6 +523,7 @@ function Dashboard({user,prices,unlocked,onLogout}){
             </div>
             <Chip color={isActive(myLast.ts)?"green":"amber"}>{isActive(myLast.ts)?"Activo":"Expirado"}</Chip>
           </div>
+          {diasRestantes!==null&&diasRestantes<=2&&<div style={{marginTop:10,padding:"8px 12px",background:C.amberDim,borderRadius:8,fontSize:11,color:C.amber}}>⚠ Expira en {diasRestantes} {diasRestantes===1?"día":"días"} — actualiza para mantener acceso</div>}
         </Card>
       ):(
         <Card style={{marginBottom:12,borderStyle:"dashed"}}>
@@ -399,7 +550,7 @@ function Dashboard({user,prices,unlocked,onLogout}){
       </Card>
 
       {myPrices.length>0&&(
-        <Card style={{marginBottom:16}}>
+        <Card style={{marginBottom:12}}>
           <Lbl>Mi historial</Lbl>
           <div style={{marginTop:10}}>
             {myPrices.slice(0,8).map((p,i)=>(
@@ -411,17 +562,23 @@ function Dashboard({user,prices,unlocked,onLogout}){
           </div>
         </Card>
       )}
+
+      {/* Botón para ver onboarding de nuevo — útil para demo */}
+      <button onClick={onResetOnboarding} style={{width:"100%",marginBottom:16,padding:"12px 0",borderRadius:10,background:"transparent",border:`1px dashed ${C.border}`,color:C.tx3,fontSize:12,cursor:"pointer"}}>
+        Ver pantalla de bienvenida de nuevo
+      </button>
     </div>
   );
 }
 
+// ─── APP ROOT ─────────────────────────────────────────────────────────────────
 export default function ExportIA(){
   const [user,setUser]=useState(null);
   const [screen,setScreen]=useState("feed");
   const [prices,setPrices]=useState(SEED);
   const [subScreen,setSubScreen]=useState(null);
+  const [showOnboarding,setShowOnboarding]=useState(false);
 
-  // Carga inicial síncrona
   useEffect(()=>{
     const savedUser=lsGet("exportia:user");
     const savedPrices=lsGet("exportia:prices");
@@ -436,6 +593,7 @@ export default function ExportIA(){
   function handleComplete(u){
     lsSet("exportia:user",u);
     setUser(u);
+    setShowOnboarding(false);
     setScreen("registrar");
   }
 
@@ -444,53 +602,52 @@ export default function ExportIA(){
     const updated=[newEntry,...prices];
     setPrices(updated);
     lsSet("exportia:prices",updated);
-    setScreen("feed"); // Va directo al feed desbloqueado
+    setScreen("feed");
   }
 
   function handleLogout(){
     lsDel("exportia:user");
+    lsDel("exportia:prices");
     setUser(null);
+    setPrices(SEED);
     setScreen("feed");
     setSubScreen(null);
   }
 
-  if(!user) return(
+  // Mostrar onboarding si no hay usuario O si se pidió ver de nuevo
+  if(!user||showOnboarding) return(
     <div style={{background:C.bg,minHeight:"100vh",fontFamily:"'Inter',system-ui,sans-serif"}}>
       <Onboarding onComplete={handleComplete}/>
     </div>
   );
 
-  // unlocked = el usuario tiene al menos un precio activo en los últimos 7 días
   const unlocked=prices.some(p=>p.user===user.nombre&&isActive(p.ts));
   const avgCampo=avg(prices.filter(p=>p.role==="productor"&&isActive(p.ts)).map(p=>p.precio));
 
-  if(subScreen?.type==="perfil") return(
-    <div style={{background:C.bg,minHeight:"100vh",maxWidth:430,margin:"0 auto",fontFamily:"'Inter',system-ui,sans-serif",color:C.tx1}}>
-      <div style={{overflowY:"auto",paddingBottom:8}}>
-        <div style={{padding:"16px 16px 0"}}>
-          <BackBtn onBack={()=>setSubScreen(null)}/>
-          <div style={{textAlign:"center",marginBottom:20}}>
-            <Avatar name={subScreen.data.user} role={subScreen.data.role}/>
-            <Val size={18} >{subScreen.data.user}</Val>
-            <div style={{fontSize:12,color:C.tx2,marginTop:4}}>{subScreen.data.region}</div>
-          </div>
-          <Card>
-            <Lbl>Precio reportado</Lbl>
-            {unlocked
-              ?<Val size={24} color={subScreen.data.role==="productor"?C.green:C.blue}>${subScreen.data.precio.toFixed(2)}/kg</Val>
-              :<div style={{fontSize:24,fontWeight:800,color:C.tx3,filter:"blur(6px)"}}>$-.--/kg</div>
-            }
-            <div style={{fontSize:12,color:C.tx2,marginTop:4}}>{subScreen.data.region} · {relTime(subScreen.data.ts)}</div>
-          </Card>
-        </div>
+  // Pantalla de mercado — drill down
+  if(subScreen?.type==="mercado") return(
+    <div style={{background:C.bg,minHeight:"100vh",maxWidth:430,margin:"0 auto",fontFamily:"'Inter',system-ui,sans-serif",color:C.tx1,display:"flex",flexDirection:"column"}}>
+      <div style={{flex:1,overflowY:"auto",paddingBottom:8}}>
+        <AnaliticasMercado
+          mercado={subScreen.data}
+          onBack={()=>setSubScreen(null)}
+          campoAvg={avgCampo}
+          unlocked={unlocked}
+          onPublish={()=>{setSubScreen(null);setScreen("registrar");}}
+        />
       </div>
     </div>
   );
 
   const screens={
-    feed:<Feed prices={prices} user={user} unlocked={unlocked} onUserTap={p=>setSubScreen({type:"perfil",data:p})} onMercadoTap={m=>setSubScreen({type:"mercado",data:m})} onPublish={()=>setScreen("registrar")}/>,
+    feed:<Feed prices={prices} user={user} unlocked={unlocked}
+      onUserTap={p=>setSubScreen({type:"perfil",data:p})}
+      onMercadoTap={m=>setSubScreen({type:"mercado",data:m})}
+      onPublish={()=>setScreen("registrar")}/>,
     registrar:<Registrar user={user} onSubmit={handleNewPrice}/>,
-    dashboard:<Dashboard user={user} prices={prices} unlocked={unlocked} onLogout={handleLogout}/>,
+    dashboard:<Dashboard user={user} prices={prices} unlocked={unlocked}
+      onLogout={handleLogout}
+      onResetOnboarding={()=>setShowOnboarding(true)}/>,
   };
 
   return(
