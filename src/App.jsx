@@ -188,6 +188,127 @@ function Onboarding({onComplete}){
   );
 }
 
+// ─── PERFIL PÚBLICO ───────────────────────────────────────────────────────────
+function PerfilPublico({entry,onBack,allPrices,unlocked}){
+  const susPrices=allPrices.filter(p=>p.user===entry.user).sort((a,b)=>b.ts-a.ts);
+  const isP=entry.role==="productor";
+  const avgMercado=avg(allPrices.filter(p=>p.role===entry.role&&isActive(p.ts)).map(p=>p.precio));
+  const diff=entry.precio-avgMercado;
+
+  return(
+    <div style={{padding:"16px 16px 0",paddingBottom:32}}>
+      <BackBtn onBack={onBack}/>
+
+      {/* Avatar + info */}
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:24,textAlign:"center"}}>
+        <div style={{width:68,height:68,borderRadius:20,background:isP?C.greenDim:C.blueDim,border:"2px solid "+(isP?C.greenBorder:C.blueBorder),display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,fontWeight:900,color:isP?C.green:C.blue,marginBottom:12}}>
+          {entry.user.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()}
+        </div>
+        <Val size={20}>{entry.user}</Val>
+        <div style={{fontSize:12,color:C.tx2,marginTop:4}}>{entry.region}</div>
+        <div style={{display:"flex",gap:8,marginTop:10,alignItems:"center"}}>
+          <Chip color={isP?"green":"blue"}>{isP?"Productor":"Minorista"}</Chip>
+          <span style={{fontSize:12,color:C.tx3}}>🔥 {entry.reportes} reportes</span>
+        </div>
+      </div>
+
+      {/* Stats grid */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+        <Card style={{padding:12}}>
+          <Lbl>Precio hoy</Lbl>
+          {unlocked
+            ?<Val size={18} color={isP?C.green:C.blue}>${entry.precio.toFixed(2)}/kg</Val>
+            :<div style={{fontSize:18,fontWeight:800,color:C.tx3,filter:"blur(5px)"}}>$-.--/kg</div>
+          }
+        </Card>
+        <Card style={{padding:12}}>
+          <Lbl>Confiabilidad</Lbl>
+          <Val size={18} color={entry.confiabilidad>=90?C.green:C.amber}>{entry.confiabilidad}%</Val>
+        </Card>
+        <Card style={{padding:12}}>
+          <Lbl>vs promedio</Lbl>
+          {unlocked
+            ?<Val size={18} color={diff>0?C.amber:C.green}>{diff>=0?"+":""}{diff.toFixed(2)} USD</Val>
+            :<div style={{fontSize:18,fontWeight:800,color:C.tx3,filter:"blur(5px)"}}>+-.--</div>
+          }
+        </Card>
+        <Card style={{padding:12}}>
+          <Lbl>Volumen</Lbl>
+          <Val size={18}>{entry.kg>0?(entry.kg/1000).toFixed(1)+"t":"—"}</Val>
+        </Card>
+      </div>
+
+      {/* Último reporte con detalle */}
+      {entry.calibre&&(
+        <Card style={{marginBottom:14}}>
+          <Lbl>Detalle del último reporte</Lbl>
+          <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:8}}>
+            <div style={{display:"flex",justifyContent:"space-between"}}>
+              <span style={{fontSize:12,color:C.tx2}}>Producto</span>
+              <span style={{fontSize:12,color:C.tx1,fontWeight:600}}>Aguacate Hass</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between"}}>
+              <span style={{fontSize:12,color:C.tx2}}>Calibre</span>
+              <span style={{fontSize:12,color:C.tx1,fontWeight:600}}>{entry.calibre}</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between"}}>
+              <span style={{fontSize:12,color:C.tx2}}>Calidad</span>
+              <span style={{fontSize:12,color:C.tx1,fontWeight:600}}>{entry.calidad}</span>
+            </div>
+            {entry.nota&&(
+              <div style={{marginTop:4,padding:"8px 10px",background:C.bg,borderRadius:8,fontSize:12,color:C.tx2,lineHeight:1.5}}>
+                "{entry.nota}"
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Historial de precios */}
+      <Card style={{marginBottom:14}}>
+        <Lbl>Historial de precios ({susPrices.length} reportes)</Lbl>
+        <div style={{marginTop:10}}>
+          {susPrices.length>0?susPrices.slice(0,6).map((p,i)=>(
+            <div key={i} style={{padding:"10px 0",borderBottom:i<Math.min(susPrices.length,6)-1?"1px solid "+C.border:"none"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:p.calibre?4:0}}>
+                <div>
+                  <span style={{fontSize:12,color:C.tx2}}>{new Date(p.ts).toLocaleDateString("es-MX",{day:"numeric",month:"short"})}</span>
+                  <span style={{marginLeft:8,fontSize:10,color:isActive(p.ts)?C.green:C.tx3}}>{isActive(p.ts)?"Hoy":"Ref."}</span>
+                </div>
+                {unlocked
+                  ?<span style={{fontSize:15,fontWeight:800,color:isP?C.green:C.blue}}>${p.precio.toFixed(2)}/kg</span>
+                  :<span style={{fontSize:15,fontWeight:800,color:C.tx3,filter:"blur(4px)"}}>$-.--</span>
+                }
+              </div>
+              {p.calibre&&<div style={{fontSize:11,color:C.tx3}}>{p.calibre} · {p.calidad}</div>}
+            </div>
+          )):(
+            <div style={{fontSize:12,color:C.tx3,padding:"8px 0"}}>Solo 1 reporte disponible</div>
+          )}
+        </div>
+        {!unlocked&&(
+          <div style={{marginTop:12,padding:"10px 12px",background:C.amberDim,border:"1px solid "+C.amberBorder,borderRadius:8,fontSize:12,color:C.amber,textAlign:"center"}}>
+            🔒 Publica tu precio para ver los números
+          </div>
+        )}
+      </Card>
+
+      {/* CTA */}
+      <Card style={{marginBottom:16,borderColor:isP?C.greenBorder:C.blueBorder,background:isP?C.greenDim:C.blueDim}}>
+        <div style={{fontSize:13,color:C.tx1,fontWeight:700,marginBottom:4}}>
+          {isP?"Quieres comprarle a este productor?":"Quieres vender en este mercado?"}
+        </div>
+        <div style={{fontSize:12,color:C.tx2}}>
+          {isP
+            ?`${entry.user} tiene ${entry.kg>0?(entry.kg/1000).toFixed(1)+"t":"producto"} disponible en ${entry.region}.`
+            :`${entry.user} compra en ${entry.region} a $${unlocked?entry.precio.toFixed(2):"-.--"}/kg.`
+          }
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 // ─── ANALÍTICAS DE MERCADO ────────────────────────────────────────────────────
 function AnaliticasMercado({mercado,onBack,campoAvg,unlocked,onPublish}){
   const [tab,setTab]=useState("tendencia");
@@ -674,6 +795,19 @@ export default function ExportIA(){
           campoAvg={avgCampo}
           unlocked={unlocked}
           onPublish={()=>{setSubScreen(null);setScreen("registrar");}}
+        />
+      </div>
+    </div>
+  );
+
+  if(subScreen?.type==="perfil") return(
+    <div style={{background:C.bg,minHeight:"100vh",maxWidth:430,margin:"0 auto",fontFamily:"'Inter',system-ui,sans-serif",color:C.tx1,display:"flex",flexDirection:"column"}}>
+      <div style={{flex:1,overflowY:"auto",paddingBottom:8}}>
+        <PerfilPublico
+          entry={subScreen.data}
+          onBack={()=>setSubScreen(null)}
+          allPrices={prices}
+          unlocked={unlocked}
         />
       </div>
     </div>
