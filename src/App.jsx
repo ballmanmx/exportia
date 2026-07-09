@@ -342,30 +342,63 @@ function AnaliticasMercado({mercado,onBack,campoAvg,unlocked,onPublish}){
 }
 
 // ─── REGISTRAR ────────────────────────────────────────────────────────────────
+const CALIBRES = ["Cal. 36 (>280g)","Cal. 48 (205-280g)","Cal. 60 (170-205g)","Cal. 70 (<170g)","Mixto"];
+const CALIDADES = ["Clase A - Premium","Clase B - Estandar","Clase C - Proceso"];
+
 function Registrar({user,onSubmit}){
   const [precio,setPrecio]=useState("");
   const [volumen,setVolumen]=useState("");
+  const [calibre,setCalibre]=useState("Cal. 48 (205-280g)");
+  const [calidad,setCalidad]=useState("Clase A - Premium");
+  const [nota,setNota]=useState("");
 
   function handleSubmit(){
     if(!precio)return;
     onSubmit({
       user:user.nombre,role:user.role,region:user.region,pais:user.pais,
       precio:parseFloat(precio),tipo:user.role==="productor"?"campo":"venta",
-      ts:Date.now(),kg:parseInt(volumen)||0,confiabilidad:80,reportes:1,
+      ts:Date.now(),kg:parseInt(volumen)||0,
+      calibre,calidad,nota,
+      confiabilidad:80,reportes:1,
     });
   }
 
   return(
-    <div style={{padding:"20px 16px 0"}}>
+    <div style={{padding:"20px 16px 0",paddingBottom:32}}>
       <Val size={19}>Publicar precio</Val>
-      <div style={{fontSize:12,color:C.tx2,marginBottom:20,marginTop:4}}>{user.role==="productor"?"🌱":"🏪"} Aguacate Hass · {user.region}</div>
-      <div style={{marginBottom:16,padding:"12px 16px",background:C.greenDim,border:`1px solid ${C.greenBorder}`,borderRadius:12}}>
-        <div style={{fontSize:13,fontWeight:800,color:C.green,marginBottom:2}}>🔓 Un precio = acceso completo</div>
-        <div style={{fontSize:12,color:C.tx2}}>Publica y desbloquea todos los precios del mercado.</div>
+      <div style={{fontSize:12,color:C.tx2,marginBottom:20,marginTop:4}}>{user.role==="productor"?"🌱":"🏪"} Aguacate Hass - {user.region}</div>
+      <div style={{marginBottom:16,padding:"12px 16px",background:C.greenDim,border:"1px solid "+C.greenBorder,borderRadius:12}}>
+        <div style={{fontSize:13,fontWeight:800,color:C.green,marginBottom:2}}>Desbloquea el mercado</div>
+        <div style={{fontSize:12,color:C.tx2}}>Publica tu precio y ve todos los precios del mercado.</div>
+      </div>
+      <Card style={{marginBottom:18,padding:"12px 16px",borderColor:C.borderMid}}>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div style={{fontSize:28}}>🥑</div>
+          <div>
+            <div style={{fontSize:14,fontWeight:800,color:C.tx1}}>Aguacate Hass</div>
+            <div style={{fontSize:11,color:C.tx2}}>HS 0804.40.01 - {user.role==="productor"?"precio de campo":"precio de venta"}</div>
+          </div>
+        </div>
+      </Card>
+      <div style={{marginBottom:16}}>
+        <Lbl>Calibre</Lbl>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+          {CALIBRES.map(c=>(
+            <button key={c} onClick={()=>setCalibre(c)} style={{padding:"10px 14px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",background:calibre===c?C.greenDim:C.surface,border:"1.5px solid "+(calibre===c?C.green:C.border),color:calibre===c?C.green:C.tx2}}>{c}</button>
+          ))}
+        </div>
       </div>
       <div style={{marginBottom:18}}>
-        <Lbl>{user.role==="productor"?"Precio de campo hoy (USD/kg)":"Precio de venta (USD/kg)"}</Lbl>
-        <div style={{display:"flex",alignItems:"center",background:C.surfaceHigh,border:`1.5px solid ${C.borderMid}`,borderRadius:14,overflow:"hidden"}}>
+        <Lbl>Calidad</Lbl>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+          {CALIDADES.map(c=>(
+            <button key={c} onClick={()=>setCalidad(c)} style={{padding:"10px 14px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",background:calidad===c?C.blueDim:C.surface,border:"1.5px solid "+(calidad===c?C.blue:C.border),color:calidad===c?C.blue:C.tx2}}>{c}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{marginBottom:18}}>
+        <Lbl>{user.role==="productor"?"Precio de campo (USD/kg)":"Precio de venta (USD/kg)"}</Lbl>
+        <div style={{display:"flex",alignItems:"center",background:C.surfaceHigh,border:"1.5px solid "+C.borderMid,borderRadius:14,overflow:"hidden"}}>
           <div style={{padding:"0 16px",fontSize:22,color:C.tx3}}>$</div>
           <input type="number" value={precio} step="0.05" placeholder="0.00" onChange={e=>setPrecio(e.target.value)}
             style={{flex:1,background:"transparent",border:"none",outline:"none",color:C.tx1,fontSize:32,fontWeight:900,padding:"16px 0"}}/>
@@ -373,22 +406,29 @@ function Registrar({user,onSubmit}){
         </div>
         {precio&&<div style={{marginTop:6,fontSize:12,color:C.tx2}}>= <strong style={{color:C.tx1}}>${(parseFloat(precio)*10.5).toFixed(2)}</strong> por caja</div>}
       </div>
-      <div style={{marginBottom:24}}>
-        <Lbl>Volumen (kg) — opcional</Lbl>
+      <div style={{marginBottom:16}}>
+        <Lbl>Volumen disponible (kg) - opcional</Lbl>
         <input type="number" value={volumen} placeholder="Ej. 5000" onChange={e=>setVolumen(e.target.value)}
-          style={{width:"100%",background:C.surfaceHigh,border:`1px solid ${C.border}`,borderRadius:12,color:C.tx1,fontSize:16,fontWeight:600,padding:"12px 14px",outline:"none",boxSizing:"border-box"}}/>
+          style={{width:"100%",background:C.surfaceHigh,border:"1px solid "+C.border,borderRadius:12,color:C.tx1,fontSize:16,fontWeight:600,padding:"12px 14px",outline:"none",boxSizing:"border-box"}}/>
       </div>
-      <div style={{marginBottom:22,padding:"10px 14px",background:C.amberDim,border:`1px solid ${C.amberBorder}`,borderRadius:10}}>
-        <div style={{fontSize:11,color:C.amber,fontWeight:700,marginBottom:2}}>⏱ VALIDEZ 7 DÍAS</div>
-        <div style={{fontSize:12,color:C.tx2}}>Después de 7 días necesitas publicar un precio nuevo.</div>
+      <div style={{marginBottom:20}}>
+        <Lbl>Notas del producto - opcional</Lbl>
+        <textarea value={nota} onChange={e=>setNota(e.target.value)} rows={3}
+          placeholder="Ej. Alto contenido de aceite, disponible esta semana, GlobalG.A.P. vigente, listo para exportacion..."
+          style={{width:"100%",background:C.surfaceHigh,border:"1px solid "+C.border,borderRadius:12,color:C.tx1,fontSize:13,padding:"12px 14px",outline:"none",resize:"none",boxSizing:"border-box",fontFamily:"inherit",lineHeight:1.5}}/>
+      </div>
+      <div style={{marginBottom:22,padding:"10px 14px",background:C.amberDim,border:"1px solid "+C.amberBorder,borderRadius:10}}>
+        <div style={{fontSize:11,color:C.amber,fontWeight:700,marginBottom:2}}>VALIDEZ 7 DIAS</div>
+        <div style={{fontSize:12,color:C.tx2}}>Despues de 7 dias necesitas publicar un precio nuevo.</div>
       </div>
       <button onClick={handleSubmit} disabled={!precio}
         style={{width:"100%",padding:"16px 0",borderRadius:13,fontSize:16,fontWeight:900,background:precio?C.green:C.border,color:precio?C.bg:C.tx3,border:"none",cursor:precio?"pointer":"default",boxShadow:precio?"0 6px 24px #22C55E33":"none"}}>
-        🔓 Publicar y desbloquear mercado
+        Publicar y desbloquear mercado
       </button>
     </div>
   );
 }
+
 
 // ─── FEED ─────────────────────────────────────────────────────────────────────
 function Feed({prices,user,unlocked,onUserTap,onMercadoTap,onPublish}){
