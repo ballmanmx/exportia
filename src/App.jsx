@@ -16,20 +16,35 @@ function lsSet(key,val){ mem[key]=val; try{ localStorage.setItem(key,JSON.string
 function lsDel(key){ delete mem[key]; try{ localStorage.removeItem(key); }catch{} }
 
 const SEED = [
-  {id:1,user:"David G.",role:"productor",region:"Ciudad Guzmán, Jalisco",pais:"México",precio:3.50,tipo:"campo",ts:Date.now()-1000*60*18,kg:2352,confiabilidad:96,reportes:18},
-  {id:2,user:"Ramón H.",role:"productor",region:"Tancítaro, Michoacán",pais:"México",precio:4.10,tipo:"campo",ts:Date.now()-1000*60*45,kg:5000,confiabilidad:88,reportes:9},
-  {id:3,user:"Freshela LLC",role:"minorista",region:"Dubai, EAU",pais:"EAU",precio:5.50,tipo:"venta",ts:Date.now()-1000*60*90,kg:1200,confiabilidad:91,reportes:22},
-  {id:4,user:"Al Aweer Market",role:"minorista",region:"Dubai, EAU",pais:"EAU",precio:5.20,tipo:"venta",ts:Date.now()-1000*60*130,kg:800,confiabilidad:85,reportes:7},
-  {id:5,user:"Carlos M.",role:"productor",region:"Zapotlán, Jalisco",pais:"México",precio:3.30,tipo:"campo",ts:Date.now()-1000*60*200,kg:3000,confiabilidad:79,reportes:5},
-  {id:6,user:"Hamid K.",role:"minorista",region:"Dubai, EAU",pais:"EAU",precio:5.80,tipo:"venta",ts:Date.now()-1000*60*260,kg:900,confiabilidad:83,reportes:4},
-  {id:7,user:"Pedro A.",role:"productor",region:"Uruapan, Michoacán",pais:"México",precio:4.30,tipo:"campo",ts:Date.now()-1000*60*320,kg:7000,confiabilidad:82,reportes:11},
-  {id:8,user:"Gulf Fresh",role:"minorista",region:"Abu Dhabi, EAU",pais:"EAU",precio:5.00,tipo:"venta",ts:Date.now()-1000*60*400,kg:600,confiabilidad:87,reportes:6},
+  {id:1,user:"David G.",role:"productor",region:"Ciudad Guzmán, Jalisco",pais:"México",precio:3.50,tipo:"campo",ts:Date.now()-1000*60*18,kg:2352,confiabilidad:96,reportes:18,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 48 · Primera · Clase A"},
+  {id:2,user:"Ramón H.",role:"productor",region:"Tancítaro, Michoacán",pais:"México",precio:4.10,tipo:"campo",ts:Date.now()-1000*60*45,kg:5000,confiabilidad:88,reportes:9,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 60 · Primera B · Clase A"},
+  {id:3,user:"Freshela LLC",role:"minorista",region:"Dubai, EAU",pais:"EAU",precio:5.50,tipo:"venta",ts:Date.now()-1000*60*90,kg:1200,confiabilidad:91,reportes:22,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 48 · Primera · Clase A"},
+  {id:4,user:"Al Aweer Market",role:"minorista",region:"Dubai, EAU",pais:"EAU",precio:5.20,tipo:"venta",ts:Date.now()-1000*60*130,kg:800,confiabilidad:85,reportes:7,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 48 · Primera · Clase B"},
+  {id:5,user:"Carlos M.",role:"productor",region:"Zapotlán, Jalisco",pais:"México",precio:3.30,tipo:"campo",ts:Date.now()-1000*60*200,kg:3000,confiabilidad:79,reportes:5,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 48 · Primera · Convencional"},
+  {id:6,user:"Hamid K.",role:"minorista",region:"Dubai, EAU",pais:"EAU",precio:5.80,tipo:"venta",ts:Date.now()-1000*60*260,kg:900,confiabilidad:83,reportes:4,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 32/36 · Superextra · Clase A"},
+  {id:7,user:"Pedro A.",role:"productor",region:"Uruapan, Michoacán",pais:"México",precio:4.30,tipo:"campo",ts:Date.now()-1000*60*320,kg:7000,confiabilidad:82,reportes:11,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 48 · Primera · Orgánico"},
+  {id:8,user:"Gulf Fresh",role:"minorista",region:"Abu Dhabi, EAU",pais:"EAU",precio:5.00,tipo:"venta",ts:Date.now()-1000*60*400,kg:600,confiabilidad:87,reportes:6,producto:"Aguacate Hass",productoId:"hass",productoEmoji:"🥑",atributosLabel:"Cal. 60 · Primera B · Clase A"},
 ];
 
 const MERCADOS = [
-  {id:"mex",nombre:"México",pais:"México",bandera:"🇲🇽",precioHoy:3.64,tendencia:[2.1,2.0,1.9,2.1,2.3,2.5,2.8,2.6,2.7,3.0,3.2,3.5,3.4,3.64],flete:0,ruta:"Campo GDL",competencia:"—",temporada:"⚠ Escasez jun–sep",tipo:"campo"},
-  {id:"usa",nombre:"USA",pais:"USA",bandera:"🇺🇸",precioHoy:4.20,tendencia:[3.5,3.4,3.3,3.5,3.7,3.9,4.1,3.9,4.0,4.1,4.2,4.3,4.2,4.20],flete:0.35,ruta:"GDL→LAX",competencia:"Perú, Chile",temporada:"🟢 Todo el año",tipo:"fob"},
-  {id:"dxb",nombre:"Dubai",pais:"EAU",bandera:"🇦🇪",precioHoy:5.35,tendencia:[4.2,4.0,3.9,4.1,4.3,4.5,4.8,4.6,4.7,5.0,5.2,5.5,5.3,5.35],flete:1.72,ruta:"GDL→DXB",competencia:"Kenia, Perú",temporada:"⚠ Evaluar jun–sep",tipo:"venta"},
+  // Fuente: SNIIM/APEAM/Profeco · Central Abasto GDL · Cal.48 (Primera) · Jul 2026
+  // Serie: Nov25=$2.48 May26=$2.59 Jun26=$2.47 Jul26=$1.61 (escasez Loca)
+  {id:"mex",nombre:"México",pais:"México",bandera:"🇲🇽",precioHoy:1.61,
+   tendencia:[1.55,1.48,1.40,1.32,1.25,1.20,1.18,1.15,1.12,1.15,1.20,1.28,1.35,1.61],
+   flete:0,ruta:"Central Abasto GDL",competencia:"—",
+   temporada:"⚠ Temporada Loca · Escasez jun–sep · Precio sube",tipo:"campo"},
+  // Fuente: USDA Market News · Cal.48 · Jun-Jul 2026 · FOB Texas/California
+  // Incluye arancel 25% vigente desde 2025 · Jun26=$4.06/kg · Jul26 baja por escasez
+  {id:"usa",nombre:"USA",pais:"USA",bandera:"🇺🇸",precioHoy:3.88,
+   tendencia:[4.10,3.98,3.85,3.70,3.58,3.48,3.42,3.50,3.60,3.72,3.85,3.98,4.08,3.88],
+   flete:0.35,ruta:"GDL→LAX/TX",competencia:"Perú, Chile, Colombia",
+   temporada:"⚠ Arancel 25% vigente · Reduce margen vs Dubai",tipo:"fob"},
+  // Fuente: OC-001 real confirmado + mercado DXB Jul 2026
+  // Margen neto real: $5.35 - $1.61 campo - $1.72 flete = $2.02/kg = 37.8%
+  {id:"dxb",nombre:"Dubai",pais:"EAU",bandera:"🇦🇪",precioHoy:5.35,
+   tendencia:[4.80,4.90,5.00,5.10,5.15,5.20,5.25,5.20,5.25,5.30,5.35,5.35,5.40,5.35],
+   flete:1.72,ruta:"GDL→DXB",competencia:"Kenia, Perú",
+   temporada:"⚠ Evaluar jun–sep · Kenia en temporada alta",tipo:"venta"},
 ];
 
 const ESTACIONAL = [
@@ -54,9 +69,18 @@ function Card({children,style,onClick}){return <div onClick={onClick} style={{ba
 function Lbl({children}){return <div style={{fontSize:10,color:C.tx3,letterSpacing:"0.09em",textTransform:"uppercase",marginBottom:3}}>{children}</div>;}
 function Val({children,color,size=20}){return <div style={{fontSize:size,fontWeight:800,color:color||C.tx1,lineHeight:1.15}}>{children}</div>;}
 function Hr(){return <div style={{height:1,background:C.border,margin:"14px 0"}}/>;}
-function Avatar({name,role}){
+function Avatar({name,role,emoji}){
   const i=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
   const c=role==="productor"?C.green:C.blue;
+  // Si hay emoji de producto, mostrarlo prominentemente sobre fondo del rol
+  if(emoji) return(
+    <div style={{width:42,height:42,borderRadius:12,flexShrink:0,background:role==="productor"?C.greenDim:C.blueDim,border:`1.5px solid ${c}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,position:"relative"}}>
+      {emoji}
+      <div style={{position:"absolute",bottom:-4,right:-4,width:16,height:16,borderRadius:"50%",background:role==="productor"?C.green:C.blue,border:"2px solid "+C.surface,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:900,color:C.bg}}>
+        {role==="productor"?"P":"M"}
+      </div>
+    </div>
+  );
   return <div style={{width:36,height:36,borderRadius:"50%",flexShrink:0,background:role==="productor"?C.greenDim:C.blueDim,border:`1.5px solid ${c}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:c}}>{i}</div>;
 }
 function BackBtn({onBack}){return <button onClick={onBack} style={{background:"none",border:"none",color:C.tx2,cursor:"pointer",fontSize:14,padding:"0 0 18px 0",display:"block"}}>← Atrás</button>;}
@@ -463,61 +487,263 @@ function AnaliticasMercado({mercado,onBack,campoAvg,unlocked,onPublish}){
 }
 
 // ─── REGISTRAR ────────────────────────────────────────────────────────────────
-const CALIBRES = ["Cal. 36 (>280g)","Cal. 48 (205-280g)","Cal. 60 (170-205g)","Cal. 70 (<170g)","Mixto"];
-const CALIDADES = ["Clase A - Premium","Clase B - Estandar","Clase C - Proceso"];
+// ─── CATÁLOGO DE PRODUCTOS — arquitectura dinámica por producto ──────────────
+// Agregar nuevo producto = agregar un objeto aquí. La UI se genera automáticamente.
+const PRODUCTOS = {
+  hass: {
+    id:"hass", nombre:"Aguacate Hass", emoji:"🥑",
+    hs_code:"0804.40.01", caja_kg:10.5,
+    atributos:[
+      { id:"calibre", label:"Calibre", requerido:true, colorActivo:"green",
+        opciones:[
+          {id:"32", label:"Cal. 32/36 · Superextra (>280g)"},
+          {id:"48", label:"Cal. 48 · Primera (205–265g) ★", default:true},
+          {id:"60", label:"Cal. 60 · Primera B (170–205g)"},
+          {id:"70", label:"Cal. 70 · Mediano (155–170g)"},
+          {id:"84", label:"Cal. 84+ · Comercial (<155g)"},
+        ]
+      },
+      { id:"tipo", label:"Tipo", requerido:true, colorActivo:"purple",
+        opciones:[
+          {id:"conv", label:"Convencional", default:true},
+          {id:"org",  label:"Orgánico certificado (+20–30%)"},
+        ]
+      },
+      { id:"calidad", label:"Calidad", requerido:true, colorActivo:"blue",
+        opciones:[
+          {id:"A", label:"Clase A · Premium exportación", default:true},
+          {id:"B", label:"Clase B · Estándar"},
+          {id:"C", label:"Clase C · Industrial / proceso"},
+        ]
+      },
+      { id:"nota", label:"Notas del producto", requerido:false, tipo:"texto",
+        placeholder:"Ej. Alto contenido de aceite, GlobalG.A.P. vigente, disponible esta semana..."
+      },
+    ]
+  },
+  tomate: {
+    id:"tomate", nombre:"Tomate Saladette", emoji:"🍅",
+    hs_code:"0702.00.01", caja_kg:12.0,
+    atributos:[
+      { id:"calidad", label:"Calidad", requerido:true, colorActivo:"green",
+        opciones:[
+          {id:"extra",   label:"Extra · Sin defectos exportación", default:true},
+          {id:"primera", label:"Primera · Defectos mínimos"},
+          {id:"segunda", label:"Segunda · Para proceso"},
+        ]
+      },
+      { id:"presentacion", label:"Presentación", requerido:true, colorActivo:"blue",
+        opciones:[
+          {id:"caja",     label:"Caja estándar 12 kg", default:true},
+          {id:"granel",   label:"Granel"},
+          {id:"clamshell",label:"Clamshell (exportación premium)"},
+        ]
+      },
+      { id:"nota", label:"Notas", requerido:false, tipo:"texto",
+        placeholder:"Ej. Sinaloa, punto de madurez 3, disponible lunes..."
+      },
+    ]
+  },
+  limon: {
+    id:"limon", nombre:"Limón Persa", emoji:"🍋",
+    hs_code:"0805.50.01", caja_kg:18.0,
+    atributos:[
+      { id:"calibre", label:"Calibre", requerido:true, colorActivo:"green",
+        opciones:[
+          {id:"110", label:"Cal. 110 · Extra grande"},
+          {id:"140", label:"Cal. 140 · Grande", default:true},
+          {id:"175", label:"Cal. 175 · Mediano"},
+          {id:"200", label:"Cal. 200+ · Chico"},
+        ]
+      },
+      { id:"calidad", label:"Calidad", requerido:true, colorActivo:"blue",
+        opciones:[
+          {id:"A", label:"Clase A · Exportación", default:true},
+          {id:"B", label:"Clase B · Nacional"},
+        ]
+      },
+      { id:"nota", label:"Notas", requerido:false, tipo:"texto",
+        placeholder:"Ej. Veracruz, sin cera, GlobalG.A.P...."
+      },
+    ]
+  },
+  pitaya: {
+    id:"pitaya", nombre:"Pitaya Roja", emoji:"🐉",
+    hs_code:"0810.90.99", caja_kg:5.0,
+    atributos:[
+      { id:"calibre", label:"Tamaño", requerido:true, colorActivo:"green",
+        opciones:[
+          {id:"jumbo",   label:"Jumbo · >500g/pieza"},
+          {id:"extra",   label:"Extra · 350–500g", default:true},
+          {id:"primera", label:"Primera · 250–350g"},
+          {id:"segunda", label:"Segunda · <250g"},
+        ]
+      },
+      { id:"variedad", label:"Variedad", requerido:true, colorActivo:"purple",
+        opciones:[
+          {id:"roja",    label:"Roja (Hylocereus costaricensis)", default:true},
+          {id:"blanca",  label:"Blanca (H. undatus)"},
+          {id:"amarilla",label:"Amarilla — precio premium"},
+        ]
+      },
+      { id:"nota", label:"Notas", requerido:false, tipo:"texto",
+        placeholder:"Ej. Jalisco, cosecha esta semana, sin daños..."
+      },
+    ]
+  },
+};
 
+// Colores por atributo
+const ATTR_COLORS = {
+  green:  {bg:C.greenDim,  border:C.greenBorder,  tx:C.green},
+  blue:   {bg:C.blueDim,   border:C.blueBorder,   tx:C.blue},
+  amber:  {bg:C.amberDim,  border:C.amberBorder,  tx:C.amber},
+  purple: {bg:"#A78BFA18", border:"#A78BFA35",    tx:"#A78BFA"},
+};
+
+// ─── SELECTOR DE PRODUCTO ─────────────────────────────────────────────────────
+function SelectorProducto({onSelect}){
+  return(
+    <div style={{padding:"20px 16px 0"}}>
+      <Val size={19}>¿Qué producto publicas?</Val>
+      <div style={{fontSize:12,color:C.tx2,marginBottom:24,marginTop:4}}>Selecciona el producto para ver sus atributos específicos</div>
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {Object.values(PRODUCTOS).map(p=>(
+          <button key={p.id} onClick={()=>onSelect(p.id)}
+            style={{width:"100%",padding:"16px 18px",background:C.surface,border:"1.5px solid "+C.border,borderRadius:14,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:14}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor=C.greenBorder;e.currentTarget.style.background=C.greenDim;}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.background=C.surface;}}>
+            <div style={{fontSize:32,flexShrink:0}}>{p.emoji}</div>
+            <div>
+              <div style={{fontSize:15,fontWeight:800,color:C.tx1}}>{p.nombre}</div>
+              <div style={{fontSize:11,color:C.tx2,marginTop:2}}>HS {p.hs_code} · caja {p.caja_kg} kg</div>
+            </div>
+            <div style={{marginLeft:"auto",fontSize:18,color:C.tx3}}>›</div>
+          </button>
+        ))}
+      </div>
+      <div style={{marginTop:16,padding:"10px 14px",background:C.surfaceHigh,borderRadius:10,fontSize:11,color:C.tx3,textAlign:"center"}}>
+        Más productos próximamente · pitaya, mango, fresa, espárrago
+      </div>
+    </div>
+  );
+}
+
+// ─── REGISTRAR — dinámico por producto ───────────────────────────────────────
 function Registrar({user,onSubmit}){
+  const [productoId,setProductoId]=useState(null);
   const [precio,setPrecio]=useState("");
   const [volumen,setVolumen]=useState("");
-  const [calibre,setCalibre]=useState("Cal. 48 (205-280g)");
-  const [calidad,setCalidad]=useState("Clase A - Premium");
-  const [nota,setNota]=useState("");
+  const [attrs,setAttrs]=useState({});  // {calibre:"48", tipo:"conv", calidad:"A", nota:""}
+
+  // Al seleccionar producto, inicializar atributos con defaults
+  function selectProducto(pid){
+    const p=PRODUCTOS[pid];
+    const defaults={};
+    p.atributos.forEach(attr=>{
+      if(attr.tipo==="texto") defaults[attr.id]="";
+      else {
+        const def=attr.opciones.find(o=>o.default);
+        defaults[attr.id]=def?def.id:attr.opciones[0].id;
+      }
+    });
+    setAttrs(defaults);
+    setProductoId(pid);
+    setPrecio("");
+    setVolumen("");
+  }
+
+  function setAttr(id,val){ setAttrs(prev=>({...prev,[id]:val})); }
 
   function handleSubmit(){
-    if(!precio)return;
+    if(!precio||!productoId)return;
+    const p=PRODUCTOS[productoId];
+    // Construir label legible de atributos
+    const attrsLabel = p.atributos
+      .filter(a=>a.tipo!=="texto"&&attrs[a.id])
+      .map(a=>{ const op=a.opciones.find(o=>o.id===attrs[a.id]); return op?op.label.split("·")[0].trim():""; })
+      .filter(Boolean).join(" · ");
     onSubmit({
-      user:user.nombre,role:user.role,region:user.region,pais:user.pais,
-      precio:parseFloat(precio),tipo:user.role==="productor"?"campo":"venta",
-      ts:Date.now(),kg:parseInt(volumen)||0,
-      calibre,calidad,nota,
-      confiabilidad:80,reportes:1,
+      user:user.nombre, role:user.role, region:user.region, pais:user.pais,
+      precio:parseFloat(precio), tipo:user.role==="productor"?"campo":"venta",
+      ts:Date.now(), kg:parseInt(volumen)||0,
+      producto:p.nombre, productoId:p.id, productoEmoji:p.emoji,
+      caja_kg:p.caja_kg, hs_code:p.hs_code,
+      atributos:attrs, atributosLabel:attrsLabel,
+      nota:attrs.nota||"",
+      // Para compatibilidad con feed existente
+      calibre:attrsLabel, calidad:attrs.calidad||"",
+      confiabilidad:80, reportes:1,
     });
   }
 
+  // Step 1 — seleccionar producto
+  if(!productoId) return <SelectorProducto onSelect={selectProducto}/>;
+
+  const producto=PRODUCTOS[productoId];
+
   return(
     <div style={{padding:"20px 16px 0",paddingBottom:32}}>
+      {/* Header con producto seleccionado */}
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}>
+        <button onClick={()=>setProductoId(null)} style={{background:"none",border:"none",color:C.tx2,cursor:"pointer",fontSize:13,padding:0}}>← Cambiar</button>
+      </div>
+
       <Val size={19}>Publicar precio</Val>
-      <div style={{fontSize:12,color:C.tx2,marginBottom:20,marginTop:4}}>{user.role==="productor"?"🌱":"🏪"} Aguacate Hass - {user.region}</div>
+      <div style={{fontSize:12,color:C.tx2,marginBottom:16,marginTop:4}}>
+        {user.role==="productor"?"🌱":"🏪"} {user.region}
+      </div>
+
       <div style={{marginBottom:16,padding:"12px 16px",background:C.greenDim,border:"1px solid "+C.greenBorder,borderRadius:12}}>
-        <div style={{fontSize:13,fontWeight:800,color:C.green,marginBottom:2}}>Desbloquea el mercado</div>
+        <div style={{fontSize:13,fontWeight:800,color:C.green,marginBottom:2}}>🔓 Desbloquea el mercado</div>
         <div style={{fontSize:12,color:C.tx2}}>Publica tu precio y ve todos los precios del mercado.</div>
       </div>
-      <Card style={{marginBottom:18,padding:"12px 16px",borderColor:C.borderMid}}>
+
+      {/* Badge producto */}
+      <Card style={{marginBottom:20,padding:"12px 16px",borderColor:C.borderMid}}>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <div style={{fontSize:28}}>🥑</div>
+          <div style={{fontSize:30}}>{producto.emoji}</div>
           <div>
-            <div style={{fontSize:14,fontWeight:800,color:C.tx1}}>Aguacate Hass</div>
-            <div style={{fontSize:11,color:C.tx2}}>HS 0804.40.01 - {user.role==="productor"?"precio de campo":"precio de venta"}</div>
+            <div style={{fontSize:14,fontWeight:800,color:C.tx1}}>{producto.nombre}</div>
+            <div style={{fontSize:11,color:C.tx2}}>HS {producto.hs_code} · caja {producto.caja_kg} kg · {user.role==="productor"?"precio de campo":"precio de venta"}</div>
           </div>
         </div>
       </Card>
-      <div style={{marginBottom:16}}>
-        <Lbl>Calibre</Lbl>
-        <div style={{display:"flex",flexDirection:"column",gap:6}}>
-          {CALIBRES.map(c=>(
-            <button key={c} onClick={()=>setCalibre(c)} style={{padding:"10px 14px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",background:calibre===c?C.greenDim:C.surface,border:"1.5px solid "+(calibre===c?C.green:C.border),color:calibre===c?C.green:C.tx2}}>{c}</button>
-          ))}
-        </div>
-      </div>
-      <div style={{marginBottom:18}}>
-        <Lbl>Calidad</Lbl>
-        <div style={{display:"flex",flexDirection:"column",gap:6}}>
-          {CALIDADES.map(c=>(
-            <button key={c} onClick={()=>setCalidad(c)} style={{padding:"10px 14px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",background:calidad===c?C.blueDim:C.surface,border:"1.5px solid "+(calidad===c?C.blue:C.border),color:calidad===c?C.blue:C.tx2}}>{c}</button>
-          ))}
-        </div>
-      </div>
-      <div style={{marginBottom:18}}>
+
+      {/* Atributos dinámicos por producto */}
+      {producto.atributos.map(attr=>{
+        if(attr.tipo==="texto") return(
+          <div key={attr.id} style={{marginBottom:16}}>
+            <Lbl>{attr.label}{!attr.requerido?" — opcional":""}</Lbl>
+            <textarea value={attrs[attr.id]||""} onChange={e=>setAttr(attr.id,e.target.value)} rows={2}
+              placeholder={attr.placeholder}
+              style={{width:"100%",background:C.surfaceHigh,border:"1px solid "+C.border,borderRadius:12,color:C.tx1,fontSize:13,padding:"12px 14px",outline:"none",resize:"none",boxSizing:"border-box",fontFamily:"inherit",lineHeight:1.5}}/>
+          </div>
+        );
+        const clr=ATTR_COLORS[attr.colorActivo]||ATTR_COLORS.blue;
+        return(
+          <div key={attr.id} style={{marginBottom:16}}>
+            <Lbl>{attr.label}</Lbl>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {attr.opciones.map(op=>{
+                const sel=attrs[attr.id]===op.id;
+                return(
+                  <button key={op.id} onClick={()=>setAttr(attr.id,op.id)}
+                    style={{padding:"10px 14px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",
+                      background:sel?clr.bg:C.surface,
+                      border:"1.5px solid "+(sel?clr.border:C.border),
+                      color:sel?clr.tx:C.tx2}}>
+                    {op.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Precio */}
+      <div style={{marginBottom:16,marginTop:4}}>
         <Lbl>{user.role==="productor"?"Precio de campo (USD/kg)":"Precio de venta (USD/kg)"}</Lbl>
         <div style={{display:"flex",alignItems:"center",background:C.surfaceHigh,border:"1.5px solid "+C.borderMid,borderRadius:14,overflow:"hidden"}}>
           <div style={{padding:"0 16px",fontSize:22,color:C.tx3}}>$</div>
@@ -525,26 +751,27 @@ function Registrar({user,onSubmit}){
             style={{flex:1,background:"transparent",border:"none",outline:"none",color:C.tx1,fontSize:32,fontWeight:900,padding:"16px 0"}}/>
           <div style={{padding:"0 14px",fontSize:13,color:C.tx3}}>USD/kg</div>
         </div>
-        {precio&&<div style={{marginTop:6,fontSize:12,color:C.tx2}}>= <strong style={{color:C.tx1}}>${(parseFloat(precio)*10.5).toFixed(2)}</strong> por caja</div>}
+        {precio&&<div style={{marginTop:6,fontSize:12,color:C.tx2}}>= <strong style={{color:C.tx1}}>${(parseFloat(precio)*producto.caja_kg).toFixed(2)}</strong> por caja de {producto.caja_kg} kg</div>}
       </div>
-      <div style={{marginBottom:16}}>
-        <Lbl>Volumen disponible (kg) - opcional</Lbl>
+
+      {/* Volumen */}
+      <div style={{marginBottom:22}}>
+        <Lbl>Volumen disponible (kg) — opcional</Lbl>
         <input type="number" value={volumen} placeholder="Ej. 5000" onChange={e=>setVolumen(e.target.value)}
           style={{width:"100%",background:C.surfaceHigh,border:"1px solid "+C.border,borderRadius:12,color:C.tx1,fontSize:16,fontWeight:600,padding:"12px 14px",outline:"none",boxSizing:"border-box"}}/>
       </div>
-      <div style={{marginBottom:20}}>
-        <Lbl>Notas del producto - opcional</Lbl>
-        <textarea value={nota} onChange={e=>setNota(e.target.value)} rows={3}
-          placeholder="Ej. Alto contenido de aceite, disponible esta semana, GlobalG.A.P. vigente, listo para exportacion..."
-          style={{width:"100%",background:C.surfaceHigh,border:"1px solid "+C.border,borderRadius:12,color:C.tx1,fontSize:13,padding:"12px 14px",outline:"none",resize:"none",boxSizing:"border-box",fontFamily:"inherit",lineHeight:1.5}}/>
-      </div>
+
       <div style={{marginBottom:22,padding:"10px 14px",background:C.amberDim,border:"1px solid "+C.amberBorder,borderRadius:10}}>
-        <div style={{fontSize:11,color:C.amber,fontWeight:700,marginBottom:2}}>VALIDEZ 7 DIAS</div>
-        <div style={{fontSize:12,color:C.tx2}}>Despues de 7 dias necesitas publicar un precio nuevo.</div>
+        <div style={{fontSize:11,color:C.amber,fontWeight:700,marginBottom:2}}>⏱ VALIDEZ 7 DÍAS</div>
+        <div style={{fontSize:12,color:C.tx2}}>Después de 7 días necesitas publicar un precio nuevo para mantener acceso.</div>
       </div>
+
       <button onClick={handleSubmit} disabled={!precio}
-        style={{width:"100%",padding:"16px 0",borderRadius:13,fontSize:16,fontWeight:900,background:precio?C.green:C.border,color:precio?C.bg:C.tx3,border:"none",cursor:precio?"pointer":"default",boxShadow:precio?"0 6px 24px #22C55E33":"none"}}>
-        Publicar y desbloquear mercado
+        style={{width:"100%",padding:"16px 0",borderRadius:13,fontSize:16,fontWeight:900,
+          background:precio?C.green:C.border,color:precio?C.bg:C.tx3,
+          border:"none",cursor:precio?"pointer":"default",
+          boxShadow:precio?"0 6px 24px #22C55E33":"none"}}>
+        🔓 Publicar y desbloquear mercado
       </button>
     </div>
   );
@@ -615,14 +842,18 @@ function Feed({prices,user,unlocked,onUserTap,onMercadoTap,onPublish}){
         {filtered.map(p=>(
           <Card key={p.id} onClick={()=>onUserTap(p)} style={{padding:14,opacity:isActive(p.ts)?1:0.65}}>
             <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-              <Avatar name={p.user} role={p.role}/>
+              <Avatar name={p.user} role={p.role} emoji={p.productoEmoji||"🥑"}/>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:2}}>
                   <div style={{fontSize:13,fontWeight:700,color:C.tx1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"55%"}}>{p.user}</div>
                   {unlocked
                     ?<div style={{fontSize:22,fontWeight:900,color:p.role==="productor"?C.green:C.blue}}>${p.precio.toFixed(2)}<span style={{fontSize:11,color:C.tx3}}>/kg</span></div>
                     :<div style={{fontSize:22,fontWeight:900,color:C.tx3,filter:"blur(5px)"}}>$-.--</div>
                   }
+                </div>
+                {/* Producto badge */}
+                <div style={{fontSize:11,color:p.role==="productor"?C.green:C.blue,fontWeight:700,marginBottom:4}}>
+                  {p.producto||"Aguacate Hass"}{p.atributosLabel?" · "+p.atributosLabel:""}
                 </div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div>
